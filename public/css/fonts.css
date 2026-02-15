@@ -1,0 +1,12 @@
+@font-face {
+  font-family: "Segoe";
+  src: url("/public/fonts/Segoe UI.woff") format("woff");
+  font-style: normal;
+  font-weight: 500;
+}
+@font-face {
+  font-family: "Segoe";
+  src: url("/public/fonts/Segoe\ UI\ Bold.woff") format("woff");
+  font-style: normal;
+  font-weight: 900;
+}

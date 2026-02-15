@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-Segoe: "Segoe";
+}
+body {
+  @apply font-Segoe;
+}
+@utility dark {
+  @apply bg-gray-500;
+}
