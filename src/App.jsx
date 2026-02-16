@@ -53,13 +53,11 @@ const App = () => {
     setSearch("");
   };
 
-  // ساده‌ترین مجازی‌سازی: فقط اولین 50 آیتم در هر گروه نمایش داده می‌شود
   const virtualizedGroups = filteredGroups.map((g) => ({
     ...g,
     items: g.items.slice(0, 50),
   }));
 
-  // بستن dropdown وقتی کلیک بیرون شد
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (listRef.current && !listRef.current.contains(e.target)) {
