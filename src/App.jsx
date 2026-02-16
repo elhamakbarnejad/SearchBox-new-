@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const App = () => {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
+  const [open, setOpen] = useState(false);
+  const listRef = useRef(null);
 
   const groups = [
     {
@@ -23,46 +25,113 @@ const App = () => {
     },
   ];
 
-  const allItems = groups.flatMap((group) => group.items);
-  console.log("allItems", allItems);
-  const filterdeGrups = groups
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase()),
+  const allItems = groups.flatMap((g) => g.items);
+
+  const filteredGroups = groups
+    .map((g) => ({
+      ...g,
+      items: g.items.filter((i) =>
+        i.name.toLowerCase().includes(search.toLowerCase()),
       ),
     }))
     .filter((g) => g.items.length > 0);
-  console.log("filterdeGrups", filterdeGrups);
-  console.log("selected", selected);
+
+  const toggleItem = (item) => {
+    if (selected.find((s) => s.id === item.id)) {
+      setSelected(selected.filter((s) => s.id !== item.id));
+    } else {
+      setSelected([...selected, item]);
+    }
+  };
+
+  const selectAll = () => {
+    setSelected(allItems);
+    setSearch("");
+  };
+  const clearAll = () => {
+    setSelected([]);
+    setSearch("");
+  };
+
+  // ساده‌ترین مجازی‌سازی: فقط اولین 50 آیتم در هر گروه نمایش داده می‌شود
+  const virtualizedGroups = filteredGroups.map((g) => ({
+    ...g,
+    items: g.items.slice(0, 50),
+  }));
+
+  // بستن dropdown وقتی کلیک بیرون شد
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (listRef.current && !listRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center gap-5 m-10">
-      <input
-        className=" border-2 border-red-500"
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <div className=" ">
+    <div className="w-80 mx-auto mt-20 relative">
+      <div className="mb-2 flex justify-between items-center">
         <button
-          className="bg-rose-500 text-white w-25 h-10 p-2 rounded-lg m-2"
-          onClick={() => setSelected(allItems)}
+          onClick={selectAll}
+          className="text-sm text-blue-600 hover:underline"
         >
-          All
+          Select All
         </button>
         <button
-          className="bg-rose-500 text-white w-25 h-10 p-2 rounded-lg m-2"
-          onClick={() => setSelected([])}
+          onClick={clearAll}
+          className="text-sm text-red-600 hover:underline"
         >
-          None
+          Clear All
         </button>
       </div>
-      <select>
-        <option value="all">All</option>
-        <option value="apples">Apples</option>
-        <option value="oranges">Oranges</option>
-        <option value="onion">Onion</option>
-      </select>
+
+      <div
+        className="border rounded shadow p-2 cursor-pointer"
+        onClick={() => setOpen(!open)}
+      >
+        {selected.length > 0
+          ? `${selected.length} selected`
+          : "Select items..."}
+      </div>
+
+      {open && (
+        <div
+          ref={listRef}
+          className="absolute z-10 mt-1 w-full bg-white border rounded shadow max-h-64 overflow-auto"
+        >
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search..."
+            className="w-full p-2 border-b focus:outline-none"
+          />
+          {virtualizedGroups.map((group) => (
+            <div key={group.title}>
+              <div className="px-2 py-1 text-gray-500 font-semibold bg-gray-100">
+                {group.title}
+              </div>
+              {group.items.map((item) => (
+                <div
+                  key={item.id}
+                  className="px-2 py-1 hover:bg-blue-100 flex items-center"
+                  onClick={() => toggleItem(item)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={!!selected.find((s) => s.id === item.id)}
+                    readOnly
+                    className="mr-2"
+                  />
+                  {item.name}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

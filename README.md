@@ -1,5 +1,21 @@
-Project Status: Under Development 🚧
-This is a React component for multi-selecting items with grouping and search functionality. Currently in early development stages and will be gradually completed.
+- Advanced Select Dropdown
 
-Repository
-📁 Initial Code: https://github.com/elhamakbarnejad/SearchBox-new-
+Features:
+
+- Multi-select
+- Searchable
+- Grouped items
+- Select All / Clear All buttons
+- Show selected count
+- Simple virtualization with scroll
+
+Usage:
+<Listbox value={selected} onChange={setSelected} multiple>
+<Listbox.Button>{selected.length === 0 ? "Select..." : `${selected.length} selected`}</Listbox.Button>
+<Listbox.Options className="max-h-64 overflow-auto">
+{/_ group headers and items here _/}
+</Listbox.Options>
+</Listbox>
+
+Note:
+✔️Works with Tailwind & Headless UI.
